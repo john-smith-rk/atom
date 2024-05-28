@@ -1,78 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Base href for serving the web app -->
   <base href="/">
 
+  <!-- Meta tags -->
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="description" content="A new Flutter project.">
-
-  <!---You can either therefore, change your API calls to use HTTPs or Use HTTP instead of HTTPs,
-  along with adding the following meta tag to your <head> element in your HTML:
-  -->
-<!--  <meta http-equiv="Content-Security-Policy" content="http">-->
-<!--  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">-->
-
-  <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="flutter_project_null_safety">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
+  <link rel="icon" type="image/png" href="favicon.png">
   <title>flutter_project_null_safety</title>
   <link rel="manifest" href="manifest.json">
 
+  <!-- Service Worker registration and Flutter initialization -->
   <script>
-    // The value below is injected by flutter build, do not touch.
     const serviceWorkerVersion = "3657497923";
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
-  <script src="firebase-messaging-sw.js"></script>
-</head>
-<body>
-
-<script src="main.dart.js" type="application/javascript"></script>
-
-<script>
-    if ( 'serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator) {
       window.addEventListener('load', function (ev) {
-        // Fcm init
-        navigator.serviceWorker.register('/firebase-messaging-sw.js').then(function(registration) {
-          console.log('>>> Service Worker registration successful!');
-        }).catch(function(error) {
-          console.error('>>> Service Worker registration failed:', error);
-        });
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        // Download main.dart.js
-        _flutter.loader.loadEntrypoint({
-          serviceWorker: {
-            serviceWorkerVersion: serviceWorkerVersion,
-          },
-          onEntrypointLoaded: function (engineInitializer) {
-            engineInitializer.initializeEngine().then(function (appRunner) {
-              appRunner.runApp();
-            });
-          }
-        });
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(function (registration) {
+            console.log('Service Worker registration successful!');
+          })
+          .catch(function (error) {
+            console.error('Service Worker registration failed:', error);
+          });
+        const serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+        fetch(serviceWorkerUrl)
+          .then(response => response.text())
+          .then(text => {
+            // Dynamically evaluate the script to initialize Flutter
+            eval(text);
+          })
+          .catch(error => {
+            console.error('Failed to load Flutter service worker:', error);
+          });
       });
     }
   </script>
+</head>
+<body>
+  <!-- Main Dart script -->
+  <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>
